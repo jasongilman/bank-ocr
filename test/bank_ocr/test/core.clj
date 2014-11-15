@@ -5,36 +5,21 @@
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.string :as str]
-            [bank-ocr.core :as b]))
+            [clojure.java.io :as io]
+            [bank-ocr.core :as b])
+  (:import java.io.StringReader))
 
 (def digits
-  "Generator for digits"
+  "Generator for digits of an account number"
   (gen/elements "012345689"))
 
 (def account-numbers
   "Generator for account number. Each account number is a string of 9 digits"
   (gen/fmap str/join (gen/vector digits 9)))
 
-(defspec generate-and-parse-account-number-spec 1000
+(defspec parse-account-number-spec 1000
   (for-all [account-num account-numbers]
     (= account-num (b/parse-account-number (b/print-account-number account-num)))))
-
-(defn account-nums->entry-file-string
-  [account-nums]
-  (str (->> account-nums
-         (map b/print-account-number)
-         (str/join "\n"))
-       "\n"))
-
-(comment 
-  (println (account-nums->entry-file-string (vals user-story-1-examples)))
-  
-  (println (str "\n" (str/join (keys user-story-1-examples))))
-
-(defspec parse-account-file-spec 100
-  (for-all [account-nums (gen/vector account-numbers)]
-    (let [account-file ])))
- )
 
 (def user-story-1-examples
   {(str " _  _  _  _  _  _  _  _  _ \n"
@@ -98,11 +83,26 @@
   (doseq [[entry account-num] user-story-1-examples]
     (is (= account-num (b/parse-account-number entry)))))
 
+(defn account-nums->entry-file-string
+  [account-nums]
+  (str (->> account-nums
+         (map b/print-account-number)
+         (str/join "\n"))
+       "\n"))
+
+(defspec parse-account-numbers-spec 100
+  (for-all [account-nums (gen/vector account-numbers)]
+    (let [account-entry-string (account-nums->entry-file-string account-nums)]
+      (= account-nums 
+         (b/parse-account-numbers (io/reader (StringReader. account-entry-string)))))))
+
 (deftest parse-user-story-1-examples-file
-  ;; Make sure we generate a valid file
-  (is (= (str/join (keys user-story-1-examples)) 
-         (account-nums->entry-file-string (vals user-story-1-examples))))
-  
-  ;; 
-  
-  )
+  (let [entry-file-string (account-nums->entry-file-string (vals user-story-1-examples))]
+    ;; Make sure we generate a valid file
+    (is (= (str/join (keys user-story-1-examples)) entry-file-string))
+    (is (= (vals user-story-1-examples) 
+           (b/parse-account-numbers (io/reader (StringReader. entry-file-string)))))))
+
+
+
+

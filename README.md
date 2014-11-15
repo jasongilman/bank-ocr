@@ -2,6 +2,14 @@
 
 A Clojure library designed to ... well, that part is up to you.
 
+## TODO
+
+  * Document everything 
+  * Write README with instructions
+  * Make items private
+  * Do all TODOs
+  * Review
+
 ## Usage
 
 FIXME

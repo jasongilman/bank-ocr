@@ -1,9 +1,8 @@
 (ns bank-ocr.core
   "TODO"
   (:require [clojure.string :as str]
-            [clojure.set :as set]))
-
-
+            [clojure.set :as set]
+            [clojure.java.io :as io]))
 
 ;; Each entry is 4 lines long, and each line has 27 characters. The first 3 lines of each entry 
 ;; contain an account number written using pipes and underscores, and the fourth line is blank.
@@ -91,17 +90,6 @@
 (def digit->char-matrix
   (set/map-invert char-matrix->digit))
 
-(def example
-  (str 
-    "    _  _     _  _  _  _  _ \n" 
-    "  | _| _||_||_ |_   ||_||_|\n"  
-    "  ||_  _|  | _||_|  ||_| _|\n"
-    "\n"
-    "    _  _     _  _  _  _  _ \n" 
-    "  | _| _||_||_ |_   ||_||_|\n"  
-    "  ||_  _|  | _||_|  ||_| _|\n"))
-
-
 (defn print-account-number
   "Takes an account number string and 'prints' it to a string"
   [account-num]
@@ -138,5 +126,23 @@
        ;; Join together the digits into an account number
        str/join))
 
+(defn parse-account-numbers
+  "Parses account numbers from a reader returning entry numbers. Returns a lazy sequence of the 
+  parsed account numbers"
+  [r]
+  ;; Read from reader one line at a time
+  (->> (line-seq r)
+       ;; Combine each set of 4 lines to form an entry string
+       (partition 4)
+       (map (partial str/join "\n"))
+       ;; Parse each entry into an account number.
+       (map parse-account-number)))
+
+(defn process-account-numbers-file
+  "Processes every account number in a file by calling the passed in function f. Processes the file
+  line by line so it should be able to process very large files that would not fit in memory."
+  [file-path f]
+  (with-open [r (io/reader (io/file file-path))]
+    (dorun (map f (parse-account-numbers r)))))
 
 

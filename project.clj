@@ -9,4 +9,6 @@
   :profiles 
   {:dev {:source-paths ["dev" "src" "test"]
          :dependencies [[org.clojure/tools.namespace "0.2.7"]
-                        [org.clojars.gjahad/debug-repl "0.3.3"]]}})
+                        [org.clojars.gjahad/debug-repl "0.3.3"]]}
+   :uberjar {:main bank-ocr.AccountReader
+             :aot :all}})
