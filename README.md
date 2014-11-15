@@ -13,11 +13,21 @@ An example account number which represents "123456789":
 
 Each entry is 4 lines long, and each line has 27 characters. The first 3 lines of each entry contain an account number written using pipes and underscores, and the fourth line is blank. An account number consists of 9 digits.
 
+## Running Tests
+
+    lein test
+
+## Building
+
+    lein uberjar
+
 ## Usage
 
 Execute `java -jar target/bank-ocr-0.1.0-SNAPSHOT-standalone.jar` with a single argument of the entry file to parse.
 
 Each parsed account number is printed out. If a digit can not be parsed `?` will be used. If an account number can not be parsed it will be followed by "ILL". If an account number is not valid it will be followed by "ERR".
+
+There are some sample files in sample_files.zip.
 
 Example:
 
@@ -33,13 +43,7 @@ Example:
 111111111 ERR
 ```
 
-## Building
 
-    lein uberjar
-
-## Running Tests
-
-    lein test
 
 ## License
 
