@@ -103,6 +103,24 @@
     (is (= (vals user-story-1-examples) 
            (b/parse-account-numbers (io/reader (StringReader. entry-file-string)))))))
 
+(def valid-account-numbers
+  "Example valid account numbers"
+  ["457508000"
+   "711111111"
+   "123456789"
+   "490867715"])
 
+(def invalid-account-numbers
+  "Example invalid account numbers"
+  ["664371495"
+   "888888888"
+   "490067715"
+   "012345678"])
+
+(deftest validate-account-numbers-test
+  (doseq [account-num valid-account-numbers]
+    (is (b/valid-account-number? account-num)))
+  (doseq [account-num invalid-account-numbers]
+    (is (not (b/valid-account-number? account-num)))))
 
 

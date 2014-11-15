@@ -90,6 +90,25 @@
 (def digit->char-matrix
   (set/map-invert char-matrix->digit))
 
+(defn account-number-checksum
+  "Returns the checksum of an account number. This can be calculated as follows:
+  
+  account number:  3  4  5  8  8  2  8  6  5
+  position names:  d9 d8 d7 d6 d5 d4 d3 d2 d1
+  
+  checksum calculation:
+  
+  ((1*d1) + (2*d2) + (3*d3) + ... + (9*d9))"
+  [account-num]
+  (let [nums (map #(Long. ^String (str %)) account-num)]
+    (apply + (map-indexed #(* (inc %1) %2) (reverse nums)))))
+
+(defn valid-account-number?
+  "Validates the account number by testing if the checksum of the account mod 11 is equal to 0. 
+  Returns true if it's valid."
+  [account-num]
+  (zero? (mod (account-number-checksum account-num) 11)))
+
 (defn print-account-number
   "Takes an account number string and 'prints' it to a string"
   [account-num]
