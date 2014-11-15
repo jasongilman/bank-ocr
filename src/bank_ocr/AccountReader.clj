@@ -14,7 +14,22 @@
     (println "Expects 1 argument of a file containing account entries to parse.")
     (System/exit 1)))
 
+(defn account-number->status
+  "Examines the account number to make sure it was parsed correctly and is valid. Returns a three
+  character code indicating the problem or empty string if it is valid." 
+  [account-num]
+  (cond
+    (re-find #"\?" account-num) "ILL"
+    (not (b/valid-account-number? account-num)) "ERR"
+    :else ""))
+
+(defn- print-account-number-with-status
+  "TODO"
+  [account-num]
+  (let [status (account-number->status account-num)]
+    (println account-num status)))
+
 (defn -main
   [& args]
   (validate-args args)
-  (b/process-account-numbers-file (first args) println))
+  (b/process-account-numbers-file (first args) print-account-number-with-status))

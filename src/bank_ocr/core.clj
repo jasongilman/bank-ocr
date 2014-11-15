@@ -141,7 +141,7 @@
        ;; Each 3x3 character matrix represents a single account number digit
        transpose
        ;; Convert each character matrix into a digit
-       (map char-matrix->digit)
+       (map #(get char-matrix->digit % \?))
        ;; Join together the digits into an account number
        str/join))
 

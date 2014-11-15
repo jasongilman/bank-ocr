@@ -21,7 +21,8 @@
   (for-all [account-num account-numbers]
     (= account-num (b/parse-account-number (b/print-account-number account-num)))))
 
-(def user-story-1-examples
+(def account-number-parse-examples
+  "TODO"
   {(str " _  _  _  _  _  _  _  _  _ \n"
         "| || || || || || || || || |\n"
         "|_||_||_||_||_||_||_||_||_|\n"
@@ -79,9 +80,29 @@
    "123456789"})
 
 
-(deftest parse-user-story-1-examples-test
-  (doseq [[entry account-num] user-story-1-examples]
-    (is (= account-num (b/parse-account-number entry)))))
+(deftest parse-account-number-test
+  (testing "valid account numbers"
+    (doseq [[entry account-num] account-number-parse-examples]
+      (is (= account-num (b/parse-account-number entry)))))
+  (testing "invalid account numbers"
+    (is (= "49006771?"
+           (b/parse-account-number
+             (str "    _  _  _  _  _  _     _ \n"
+                  "|_||_|| || ||_   |  |  | _ \n"
+                  "  | _||_||_||_|  |  |  | _|\n"
+                  "\n"))))
+    (is (= "12345678?"
+           (b/parse-account-number
+             (str "    _  _     _  _  _  _  _ \n"
+                  "  | _| _||_||_ |_   ||_||_|\n"
+                  "  ||_  _|  | _||_|  ||_| _ \n"
+                  "\n"))))
+    (is (= "?????????"
+           (b/parse-account-number
+             (str "    _  _     _  _  _  _  _ \n"
+                  "     | _| _| _ |_   ||_||_|\n"
+                  "  ||_  _   | _|| |   | | _ \n"
+                  "\n"))))))
 
 (defn account-nums->entry-file-string
   [account-nums]
@@ -96,21 +117,21 @@
       (= account-nums 
          (b/parse-account-numbers (io/reader (StringReader. account-entry-string)))))))
 
-(deftest parse-user-story-1-examples-file
-  (let [entry-file-string (account-nums->entry-file-string (vals user-story-1-examples))]
+(deftest parse-account-numbers-test
+  (let [entry-file-string (account-nums->entry-file-string (vals account-number-parse-examples))]
     ;; Make sure we generate a valid file
-    (is (= (str/join (keys user-story-1-examples)) entry-file-string))
-    (is (= (vals user-story-1-examples) 
+    (is (= (str/join (keys account-number-parse-examples)) entry-file-string))
+    (is (= (vals account-number-parse-examples) 
            (b/parse-account-numbers (io/reader (StringReader. entry-file-string)))))))
 
-(def valid-account-numbers
+(def example-valid-account-numbers
   "Example valid account numbers"
   ["457508000"
    "711111111"
    "123456789"
    "490867715"])
 
-(def invalid-account-numbers
+(def example-invalid-account-numbers
   "Example invalid account numbers"
   ["664371495"
    "888888888"
@@ -118,9 +139,9 @@
    "012345678"])
 
 (deftest validate-account-numbers-test
-  (doseq [account-num valid-account-numbers]
+  (doseq [account-num example-valid-account-numbers]
     (is (b/valid-account-number? account-num)))
-  (doseq [account-num invalid-account-numbers]
+  (doseq [account-num example-invalid-account-numbers]
     (is (not (b/valid-account-number? account-num)))))
 
 
