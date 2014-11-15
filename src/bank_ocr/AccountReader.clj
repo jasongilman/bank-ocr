@@ -1,10 +1,11 @@
 (ns bank-ocr.AccountReader
-  "TODO"
+  "Class containing the main method for the Bank OCR application. The main method accepts a single 
+  argument of a file containing account number entries to parse. It reads the account numbers
+  and prints them to standard out. Account numbers that can not be parsed will be printed with a ?
+  mark for the characters that can not be parsed and followed by ILL. Account numbers that are 
+  invalid will be followed by ERR."
   (:require [bank-ocr.core :as b])
   (:gen-class :main true))
-
-
-;; TODO test file non existance
 
 (defn- validate-args
   "Validates the arguments. Prints an error message and exits with a non-zero
@@ -24,7 +25,7 @@
     :else ""))
 
 (defn- print-account-number-with-status
-  "TODO"
+  "Prints the account number to standard out along with a 3 character status string"
   [account-num]
   (let [status (account-number->status account-num)]
     (println account-num status)))
@@ -32,4 +33,13 @@
 (defn -main
   [& args]
   (validate-args args)
-  (b/process-account-numbers-file (first args) print-account-number-with-status))
+  (let [[file-path] args]
+    (try 
+      (b/process-account-numbers-file file-path print-account-number-with-status)
+      (catch java.io.FileNotFoundException e
+        (println "File" file-path "does not exist.")
+        (System/exit 1))
+      (catch Throwable e
+        (println "Unexpected error:" (.getMessage e))
+        (.printStackTrace e)
+        (System/exit 1)))))

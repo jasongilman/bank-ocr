@@ -1,14 +1,9 @@
 (ns bank-ocr.core
-  "TODO"
+  "Main namespace for the Bank OCR application. It contains functions for parsing and validating 
+  account numbers"
   (:require [clojure.string :as str]
             [clojure.set :as set]
             [clojure.java.io :as io]))
-
-;; Each entry is 4 lines long, and each line has 27 characters. The first 3 lines of each entry 
-;; contain an account number written using pipes and underscores, and the fourth line is blank.
-
-;; Each account number should have 9 digits, all of which should be in the range 0-9. A normal file 
-;; contains around 500 entries.
 
 (defn transpose 
   "Matrix transposition in Clojure. Takes a sequence of sequences and groups together the elements
@@ -24,6 +19,9 @@
   Source: http://stackoverflow.com/questions/10347315/matrix-transposition-in-clojure"
   [m]
   (apply mapv vector m))
+
+;; Vars containing matrices of the characters of a printed digit. The rows of each matrix represent
+;; the separate lines of the printed digit. 
 
 (def one 
   [[\space \space \space]
@@ -76,6 +74,7 @@
    [\| \_ \|]])
 
 (def char-matrix->digit
+  "A map of character matrices to their digits"
   {one \1
    two \2
    three \3
@@ -88,6 +87,7 @@
    zero \0})
 
 (def digit->char-matrix
+  "A map of digits to character matrices."
   (set/map-invert char-matrix->digit))
 
 (defn account-number-checksum

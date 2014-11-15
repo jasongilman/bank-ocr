@@ -22,7 +22,7 @@
     (= account-num (b/parse-account-number (b/print-account-number account-num)))))
 
 (def account-number-parse-examples
-  "TODO"
+  "A map of valid account number entries to the equivalent parsed account numbers."
   {(str " _  _  _  _  _  _  _  _  _ \n"
         "| || || || || || || || || |\n"
         "|_||_||_||_||_||_||_||_||_|\n"
@@ -105,6 +105,7 @@
                   "\n"))))))
 
 (defn account-nums->entry-file-string
+  "Takes a list of account numbers and returns a string containing the printed entries"
   [account-nums]
   (str (->> account-nums
          (map b/print-account-number)
@@ -125,14 +126,12 @@
            (b/parse-account-numbers (io/reader (StringReader. entry-file-string)))))))
 
 (def example-valid-account-numbers
-  "Example valid account numbers"
   ["457508000"
    "711111111"
    "123456789"
    "490867715"])
 
 (def example-invalid-account-numbers
-  "Example invalid account numbers"
   ["664371495"
    "888888888"
    "490067715"
@@ -143,5 +142,3 @@
     (is (b/valid-account-number? account-num)))
   (doseq [account-num example-invalid-account-numbers]
     (is (not (b/valid-account-number? account-num)))))
-
-
